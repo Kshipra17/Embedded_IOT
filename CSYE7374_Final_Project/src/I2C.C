@@ -8,6 +8,7 @@
 #include <string.h>
 #include <linux/i2c-dev.h>
 #include <sys/ioctl.h>
+#include "../Inc/I2C.h"
 
 unsigned short dig_T1;
 short dig_T2;
@@ -27,9 +28,9 @@ BMP280_S32_t bmp280_compensate_T_int32(BMP280_S32_t adc_T)
 	return T;
 }
 
-int getTemperaturefromI2C(int *dataBuf)
+void getTemperaturefromI2C(int *dataBuf)
 {
-	int i2c = open("/dev/i2c-1", O_RDWR);
+int i2c = open("/dev/i2c-1", O_RDWR);
 	ioctl(i2c, I2C_SLAVE, 0x76); // default address
 	unsigned char buffer[0x10];
 	buffer[0] = 0xf4;
@@ -60,11 +61,11 @@ int getTemperaturefromI2C(int *dataBuf)
 
 		printf("I2C Temperature %.2f\n", (float)bmp280_compensate_T_int32(T)/100.0);
 
-		dataBuf =  (float)bmp280_compensate_T_int32(T)/100.0;
+		*dataBuf =  (float)bmp280_compensate_T_int32(T)/100.0;
 		usleep(10000);
 	//}
 
 	close(i2c);
 
-	return dataBuf;
+//	return dataBuf;
 }

@@ -7,7 +7,7 @@
 
 #ifndef INC_I2C_H_
 #define INC_I2C_H_
-int getTemperaturefromI2C(int *dataBuf);
+void getTemperaturefromI2C(int *dataBuf);
 
 
 #endif /* INC_I2C_H_ */
