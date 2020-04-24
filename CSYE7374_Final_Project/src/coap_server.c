@@ -49,7 +49,7 @@ static char* strndup(const char* s1, size_t n)
 #define COAP_RESOURCE_CHECK_TIME 1
 
 #include <coap2/coap.h>
-#include "../Inc/I2C.h"
+#include "I2C.h"
 
 
 
@@ -173,17 +173,19 @@ hnd_get_time(coap_context_t  *ctx UNUSED_PARAM,
 		coap_binary_t *token,
 		coap_string_t *query,
 		coap_pdu_t *response) {
-	unsigned char buf[40];
+	unsigned char buf[20];
 	(void)request;
-	int dataBuf=0;
+	float dataBuf=0;
+  int len=0;
 	getTemperaturefromI2C(&dataBuf);
 
 	memset(buf,0,sizeof(buf));
-	snprintf(buf,sizeof(buf),"%04f",dataBuf);
+	len = snprintf(buf,sizeof(buf),"%f",dataBuf);
+ 	
 
 	coap_add_data_blocked_response(resource, session, request, response, token,
 			COAP_MEDIATYPE_TEXT_PLAIN, 1,
-			strlen(buf),
+			len,
 			buf);
 
 	//   {
@@ -1376,10 +1378,11 @@ main(int argc, char **argv) {
 	}
 
 	coap_startup();
-	coap_dtls_set_log_level(log_level);
+//	coap_dtls_set_log_level(log_level);
 	coap_set_log_level(log_level);
 
 	ctx = get_context(addr_str, port_str);
+	//ctx = coap_new_context(NULL);
 	if (!ctx)
 		return -1;
 
